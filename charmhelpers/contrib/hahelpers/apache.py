@@ -24,6 +24,7 @@
 
 import os
 import subprocess
+import six
 
 from charmhelpers.core.hookenv import (
     config as config_get,
@@ -91,5 +92,8 @@ def install_ca_cert(ca_cert):
         else:
             log("Installing new CA cert", level=INFO)
             with open(cert_file, 'wb') as crt:
+                if six.PY3 and isinstance(ca_cert,
+                                          six.string_types):
+                    ca_cert = ca_cert.encode('UTF-8')
                 crt.write(ca_cert)
             subprocess.check_call(['update-ca-certificates', '--fresh'])
